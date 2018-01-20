@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport')
 var User = require('../config/mongoose_setup');
+var Chain = require('../config/mongoose_setup2');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -14,6 +15,13 @@ router.get('/login', function(req, res, next) {
 
 router.get('/signup', function(req, res, next) {
   res.render('signup', { title: 'Sign Up', message : req.flash('signupMessage') });
+});
+
+router.get('/gameplay', function(req, res, next) {
+  Chain.find({}, 'color coord_array')
+  .exec(function(err, list_chains) {
+    res.render('gameplay', {chains_list: list_chains});
+  });
 });
 
 router.post('/get_coord', function(req, res, next) {

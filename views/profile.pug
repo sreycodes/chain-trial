@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  h1= title
+  br
+  script.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => { 
+                                                  console.log('Ajax request started');
+                                                  $.ajax({
+                                                        type: "POST",
+                                                        url: "/get_coord",
+                                                        dataType: "json",
+                                                        data: {
+                                                            lat: position.coords.latitude,
+                                                            lng: position.coords.longitude
+                                                        },
+                                                        success: function (data) {
+                                                           alert('Success');
+                                                        },
+                                                        error: function () {
+                                                         alert('Error');
+                                                        }
+                                                    });
+                                                  }, 
+                                                  (error) => {
+                                                    var errors = {
+                                                        1: 'Authorization fails', // permission denied
+                                                        2: 'Can\'t detect your location', //position unavailable
+                                                        3: 'Connection timeout' // timeout
+                                                    };
+                                                    console.log('Error:' + errors[error.code]);
+                                                });
+    } else {
+        console.log('Your browser is out of fashion, there\'s no geolocation!');
+    }
+  br
+  a(href='/logout') Logout

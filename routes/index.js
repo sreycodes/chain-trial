@@ -17,9 +17,24 @@ router.get('/signup', function(req, res, next) {
   res.render('signup', { title: 'Sign Up', message : req.flash('signupMessage') });
 });
 
+router.get('/fill_in', function(req, res, next) {
+  // Chain.remove({}, function(err) {
+  //  console.log("all clear");
+  // });
+  chain = new Chain();
+  chain.local.color = 'red';
+  chain.local.coord_array = [{lat: 5,lng: 20},{lat: -30,lng: 4},{lat: 7,lng: 8}];
+  chain.save(function(err) {
+    if(err) throw(err);
+    console.log("New chain");
+    console.log(chain);
+  });
+});
+
 router.get('/gameplay', function(req, res, next) {
-  Chain.find({}, 'color coord_array')
+  Chain.find({}, 'local.color local.coord_array')
   .exec(function(err, list_chains) {
+    // console.log(list_chains);
     res.render('gameplay', {chains_list: list_chains});
   });
 });
@@ -34,7 +49,9 @@ router.post('/get_coord', function(req, res, next) {
                 if(err) 
                     throw err;
             });
+            console.log("i am here");
         });
+
 });
 
 router.get('/profile', isLoggedIn, function(req, res) {

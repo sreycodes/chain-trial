@@ -22,8 +22,8 @@ router.get('/fill_in', function(req, res, next) {
   //  console.log("all clear");
   // });
   chain = new Chain();
-  chain.local.color = 'red';
-  chain.local.coord_array = [{lat: 5,lng: 20},{lat: -30,lng: 4},{lat: 7,lng: 8}];
+  chain.local.color = 'blue';
+  chain.local.coord_array = [{lat: 72,lng: -20},{lat: 12,lng: -57},{lat: 18,lng: -87}];
   chain.save(function(err) {
     if(err) throw(err);
     console.log("New chain");
@@ -34,7 +34,11 @@ router.get('/fill_in', function(req, res, next) {
 router.get('/gameplay', function(req, res, next) {
   Chain.find({}, 'local.color local.coord_array', function(err, list_chains) {
     // console.log(list_chains);
-    res.render('gameplay', {chains_list: list_chains});
+   list_chains.forEach(function(chain, index) {
+     list_chains[index] = list_chains[index].local;
+   });
+   console.log(list_chains);
+   res.render('gameplay', {chains_list: list_chains});
   });
 });
 

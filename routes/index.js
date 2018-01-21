@@ -3,6 +3,7 @@ var router = express.Router();
 var passport = require('passport')
 var User = require('../config/mongoose_setup');
 var Chain = require('../config/mongoose_setup2');
+var geodist = require('geodist');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -31,18 +32,41 @@ router.get('/fill_in', function(req, res, next) {
   });
 });
 
+<<<<<<< HEAD
 router.get('/gameplay', function(req, res, next) {
   Chain.find({}, 'local.color local.coord_array', function(err, list_chains) {
+=======
+router.get('/gameplay', isLoggedIn, function(req, res, next) {
+  console.log(req.user);
+  User.find({}, 'lat lng chain')
+  .exec(function(err, list_users) {
+    list_correct_users = [];
+    var cntr = 0;
+    console.log("KYA AAP CHUTIYE HAIN");
+    list_users.forEach(function(user, index) {
+      console.log(user);
+      if(!user.local.chain && geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng],
+        {format: true, unit: 'km'}) <= 1000) {
+        list_correct_users[cntr] = user.local;
+        console.log(user);
+        cntr++;
+      }
+    });
+
+    Chain.find({}, 'local.color local.coord_array')
+    .exec(function(err, list_chains) {
+>>>>>>> 2ea8b011dda587aaf0751c82313a9359f2fafa52
     // console.log(list_chains);
-   list_chains.forEach(function(chain, index) {
-     list_chains[index] = list_chains[index].local;
-   });
-   console.log(list_chains);
-   res.render('gameplay', {chains_list: list_chains});
+    list_chains.forEach(function(chain, index) {
+      list_chains[index] = list_chains[index].local;
+    });
+    console.log(list_chains);
+    res.render('gameplay', {chains_list: list_chains, nearby_users: list_correct_users});
+    });
   });
 });
 
-router.post('/get_coord', function(req, res, next) {
+router.post('/get_coord', isLoggedIn, function(req, res, next) {
 
     User.findOne({ 'local.username' :  req.user.local.username }, function(err, user) {
 

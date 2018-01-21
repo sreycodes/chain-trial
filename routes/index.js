@@ -32,8 +32,7 @@ router.get('/fill_in', function(req, res, next) {
 });
 
 router.get('/gameplay', function(req, res, next) {
-  Chain.find({}, 'local.color local.coord_array')
-  .exec(function(err, list_chains) {
+  Chain.find({}, 'local.color local.coord_array', function(err, list_chains) {
     // console.log(list_chains);
     res.render('gameplay', {chains_list: list_chains});
   });
@@ -45,13 +44,15 @@ router.post('/get_coord', function(req, res, next) {
 
             user.local.lat = req.body.lat;
             user.local.lng = req.body.lng;
-            user.save((err) => {
+            user.save((err, user) => {
                 if(err) 
-                    throw err;
+                  throw err;
+                else
+                  console.log("i am here");
+                  //next();
             });
-            console.log("i am here");
         });
-
+    res.end();
 });
 
 router.get('/profile', isLoggedIn, function(req, res) {

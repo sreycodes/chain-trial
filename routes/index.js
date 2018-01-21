@@ -32,10 +32,6 @@ router.get('/fill_in', function(req, res, next) {
   });
 });
 
-<<<<<<< HEAD
-router.get('/gameplay', function(req, res, next) {
-  Chain.find({}, 'local.color local.coord_array', function(err, list_chains) {
-=======
 router.get('/gameplay', isLoggedIn, function(req, res, next) {
   console.log(req.user);
   User.find({}, 'lat lng chain')
@@ -55,7 +51,6 @@ router.get('/gameplay', isLoggedIn, function(req, res, next) {
 
     Chain.find({}, 'local.color local.coord_array')
     .exec(function(err, list_chains) {
->>>>>>> 2ea8b011dda587aaf0751c82313a9359f2fafa52
     // console.log(list_chains);
     list_chains.forEach(function(chain, index) {
       list_chains[index] = list_chains[index].local;

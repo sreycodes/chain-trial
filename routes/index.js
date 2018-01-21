@@ -18,6 +18,47 @@ router.get('/signup', function(req, res, next) {
   res.render('signup', { title: 'Sign Up', message : req.flash('signupMessage') });
 });
 
+router.post('/create_chain', function(req, res, next) {
+  chain = new Chain();
+  chain.local.color = 'green'; //Random color has to be added
+  chain.local.coord_array = [];
+  chain.local.coord_array.push({req.user.local.lat, req.user.local.lng});
+  chain.save(function(err, chain) {
+    if(err) throw(err);
+    console.log("New chain");
+    console.log(chain);
+    User.update({'local.username' : req.user.local.username},{'local.chain' : req.body.chainID},
+                function(err, user) {
+                  if(err) throw err;
+                  console.log("User updated");
+                  User.findOne({'local.username' : req.body.username},
+                                function(err, user) {
+                                  if(err) throw err;
+                                  user.local.invites.push(chain._id);
+                                  user.save(function(err) {
+                                              if(err) throw err;
+                                            });
+                              });
+                });
+  });
+  res.redirect('/gameplay');
+});
+
+router.post('/join_chain', function(req, res, next) {
+  Chain.findOne({'_id': req.body.chainID}, function(err, chain) {
+    chain.local.coord_array.push({req.user.local.lat, req.user.local.lng});
+    chain.save(function(err, chain) {
+      User.update({'_id': req.body.userID}, {'local.chain': req.body.chainID},
+          function(err, user) {
+            user.local.invites = [];
+            user.save(function(err) {
+              if(err) throw err;
+            });
+          });
+    });
+  });
+});
+
 router.get('/fill_in', function(req, res, next) {
   // Chain.remove({}, function(err) {
   //  console.log("all clear");

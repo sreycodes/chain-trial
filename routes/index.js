@@ -34,19 +34,14 @@ router.get('/fill_in', function(req, res, next) {
 
 router.get('/gameplay', isLoggedIn, function(req, res, next) {
   console.log(req.user);
-  User.find({}, 'lat lng chain')
+  User.find()
   .exec(function(err, list_users) {
-    list_correct_users = [];
-    var cntr = 0;
     console.log("KYA AAP CHUTIYE HAIN");
     list_users.forEach(function(user, index) {
-      console.log(user);
-      if(!user.local.chain && geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng],
-        {format: true, unit: 'km'}) <= 1000) {
-        list_correct_users[cntr] = user.local;
-        console.log(user);
-        cntr++;
-      }
+      var dist = geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng], {format: false, unit: 'km'});
+      if(!user.local.chain && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn) {
+        list_users[index] = list_users[index].local;
+      } else  list_users[index] = null;
     });
 
     Chain.find({}, 'local.color local.coord_array')
@@ -56,7 +51,8 @@ router.get('/gameplay', isLoggedIn, function(req, res, next) {
       list_chains[index] = list_chains[index].local;
     });
     console.log(list_chains);
-    res.render('gameplay', {chains_list: list_chains, nearby_users: list_correct_users});
+    console.log(list_users);
+    res.render('gameplay', {me: req.user.local, chains_list: list_chains, nearby_users: list_users});
     });
   });
 });

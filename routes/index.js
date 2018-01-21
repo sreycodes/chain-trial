@@ -73,7 +73,7 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
             });
             console.log("i am here");
         });
-
+    res.end();
 });
 
 router.get('/profile', isLoggedIn, function(req, res) {

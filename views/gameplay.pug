@@ -23,14 +23,16 @@ html
 
     script.
       var yo = [#{chains_list}]
-      console.log(yo);
+      // console.log(yo);
+      var wow = [#{nearby_users}]
+      // console.log(wow);
       // This example creates a 2-pixel-wide red polyline showing the path of
       // the first trans-Pacific flight between Oakland, CA, and Brisbane,
       // Australia which was made by Charles Kingsford Smith.
       function initMap() {
       var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 7,
-      center: {lat: 10, lng: 105},
+      center: {lat: #{me.lat}, lng: #{me.lng}},
       mapTypeId: 'terrain'
       });
 
@@ -46,19 +48,28 @@ html
         });
         chain1.setMap(map);
       });
-       var chain2_list = [
-       {lat: 72.772, lng: -22.214},
-       {lat: 12.291, lng: -57.821},
-       {lat: 18.142, lng: -87.431},
-       {lat: 27.467, lng: 53.027}
-       ];
-       var chain2 = new google.maps.Polyline({
-      path: chain2_list,
-      geodesic: true,
-      strokeColor: '#FF00FF',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
+
+      wow.forEach(function(this_user) {
+        // console.log(this_user);
+        var marker = new google.maps.Marker({
+          position: {lat: this_user.lat, lng: this_user.lng},
+          map: map,
+          title: this_user.username
+          });
       });
-      chain2.setMap(map);
+
+      var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+      var meMarker = new google.maps.Marker({
+        position: {lat: #{me.lat}, lng: #{me.lng}},
+        map: map,
+        icon: image
+      });
+
       }
     script(async='', defer='', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyB5YKqBNhQ2DSXJYlVhj3Fr6b39X-NlWmA&callback=initMap')
+    h2= 'Create chain and extend to -'
+    ol
+    each user in nearby_users
+      if user
+        li
+          a(href=user.username) #{user.username}

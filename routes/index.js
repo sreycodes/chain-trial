@@ -18,11 +18,20 @@ router.get('/signup', function(req, res, next) {
   res.render('signup', { title: 'Sign Up', message : req.flash('signupMessage') });
 });
 
+router.get('/update', function(req, res, next) {
+  User.update({'local.username': 'chutiya'}, {'local.username' : 'LOL'}, 
+              function(err, user) {
+                if(err) throw err;
+                console.log(user);
+              });
+  res.redirect('/login');
+});
+
 router.post('/create_chain', function(req, res, next) {
   chain = new Chain();
   chain.local.color = 'green'; //Random color has to be added
   chain.local.coord_array = [];
-  chain.local.coord_array.push({req.user.local.lat, req.user.local.lng});
+  chain.local.coord_array.push({lat: req.user.local.lat,lng: req.user.local.lng});
   chain.save(function(err, chain) {
     if(err) throw(err);
     console.log("New chain");
@@ -46,7 +55,7 @@ router.post('/create_chain', function(req, res, next) {
 
 router.post('/join_chain', function(req, res, next) {
   Chain.findOne({'_id': req.body.chainID}, function(err, chain) {
-    chain.local.coord_array.push({req.user.local.lat, req.user.local.lng});
+    chain.local.coord_array.push({lat : req.user.local.lat,lng : req.user.local.lng});
     chain.save(function(err, chain) {
       User.update({'_id': req.body.userID}, {'local.chain': req.body.chainID},
           function(err, user) {

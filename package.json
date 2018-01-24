@@ -5,6 +5,13 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "keywords": [
+    "example",
+    "heroku"
+  ],
+  "engines": {
+    "node": "8.9.4"
+  },
   "dependencies": {
     "bcrypt-nodejs": "latest",
     "body-parser": "~1.15.2",

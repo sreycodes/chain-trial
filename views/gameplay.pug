@@ -71,19 +71,5 @@ html
     ol
     each user in nearby_users
       if user
-        li 
-          | #{user.username} 
-          form(action='/create_chain', method='POST')
-            input(type='hidden', name='username', value=user.username)
-            input(type='submit', value='Extend')
-    
-    h2= 'Invitations'
-    ol
-    each invite in me.invites
-      li 
-        | #{invite} 
-        form(action='/join_chain', method='POST')
-          input(type='hidden', name='chainID', value=invite)
-          input(type='submit', value='Join')
-
-
+        li
+          a(href=user.username) #{user.username}

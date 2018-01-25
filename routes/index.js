@@ -36,7 +36,7 @@ router.post('/create_chain', function(req, res, next) {
     if(err) throw(err);
     console.log("New chain");
     console.log(chain);
-    User.update({'local.username' : req.user.local.username},{'local.chain' : chain._id},
+    User.update({'local.username' : req.user.local.username},{'local.chain' : req.body.chainID},
                 function(err, user) {
                   if(err) throw err;
                   console.log("User updated");
@@ -55,20 +55,17 @@ router.post('/create_chain', function(req, res, next) {
 
 router.post('/join_chain', function(req, res, next) {
   Chain.findOne({'_id': req.body.chainID}, function(err, chain) {
-    console.log(chain._id);
     chain.local.coord_array.push({lat : req.user.local.lat,lng : req.user.local.lng});
     chain.save(function(err, chain) {
-     User.findOne({'_id': req.user._id}, function(err, user) {
-        user.local.chain = req.body.chainID;
-        user.local.invites = [];
-        console.log(user);
-        user.save(function(err) {
-          if(err) throw err;
-        });
-      });
+      User.update({'_id': req.body.userID}, {'local.chain': req.body.chainID},
+          function(err, user) {
+            user.local.invites = [];
+            user.save(function(err) {
+              if(err) throw err;
+            });
+          });
     });
   });
-  res.redirect('/gameplay');
 });
 
 router.get('/fill_in', function(req, res, next) {

@@ -99,13 +99,13 @@ router.post('/join_chain', function(req, res, next) {
 
 router.get('/gameplay', isLoggedIn, function(req, res, next) {
   // console.log(req.user);
-  User.find({}, 'local.lat local.lng local.username local.invites local.chain local.loggedIn')
+  User.find({}, 'local.lat local.lng local.username local.invites local.chain local.loggedIn local.inviteSent')
   .exec(function(err, list_users) {
     // console.log("KYA AAP CHUTIYE HAIN");
     var new_list_users = [];
     list_users.forEach(function(user, index) {
       var dist = geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng], {format: false, unit: 'km'});
-      if(!user.local.chain && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn) {
+      if(!user.local.inviteSent && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn) {
         new_list_users.push(user.local);
       }
     });

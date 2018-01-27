@@ -4,6 +4,7 @@ var passport = require('passport')
 var User = require('../config/mongoose_setup');
 var Chain = require('../config/mongoose_setup2');
 var geodist = require('geodist');
+var color_array = ['blue', 'green', 'red', 'yellow', 'white', 'black']
 
 /* GET home page. */
 router.get('/', isNotLoggedIn, function(req, res, next) {
@@ -30,7 +31,7 @@ router.get('/signup', isNotLoggedIn, function(req, res, next) {
 
 router.post('/create_chain', function(req, res, next) {
   chain = new Chain();
-  chain.local.color = 'green'; //Random color has to be added
+  chain.local.color = color_array.pop();
   chain.local.coord_array = [];
   chain.local.coord_array.push({lat: req.user.local.lat,lng: req.user.local.lng});
   chain.save(function(err, chain) {
@@ -98,7 +99,7 @@ router.get('/gameplay', isLoggedIn, function(req, res, next) {
     var new_list_users = [];
     list_users.forEach(function(user, index) {
       var dist = geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng], {format: false, unit: 'km'});
-      if(!user.local.chain && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn && (user.local.invites).indexOf() {
+      if(!user.local.chain && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn) {
         new_list_users.push(user.local);
       }
     });

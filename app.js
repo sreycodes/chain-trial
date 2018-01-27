@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var session  = require('express-session');
 var flash = require('connect-flash');
+//var http = require('http');
 
 mongoose.connect('mongodb://sreycodes:Welcome123@ds255767.mlab.com:55767/authentication'); // connect to our database
 

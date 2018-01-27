@@ -67,9 +67,35 @@ html
 
       }
     script(async='', defer='', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyB5YKqBNhQ2DSXJYlVhj3Fr6b39X-NlWmA&callback=initMap')
+    script(src="/socket.io/socket.io.js")
+    script.
+        var socket = io();
+        function sendRefreshEvent() { 
+          console.log("Sent client event");
+          socket.emit('mapChanged', 'Sent an event from the client!');
+        }
+        socket.on('refreshAll', function(data) {
+          window.location.reload();
+          console.log(data);
+        });
     h2= 'Create chain and extend to -'
-    ol
-    each user in nearby_users
-      if user
-        li
-          a(href=user.username) #{user.username}
+      ol
+        each user in nearby_users
+          if user
+            li 
+            | #{user.username} 
+            form(action='/create_chain', method='POST')
+              input(type='hidden', name='username', value=user.username)
+              input(type='submit', value='Extend', onclick="sendRefreshEvent()")
+    h2= 'Invitations'
+      ol
+        if me.invites
+          each invite in me.invites
+            li 
+              if invite
+              | #{invite} 
+              form(action='/join_chain', method='POST')
+                input(type='hidden', name='chain_color', value=invite)
+                input(type='submit', value='Join', onclick="sendRefreshEvent()")
+  
+          

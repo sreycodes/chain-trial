@@ -1,0 +1,76 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="initial-scale=1.0, user-scalable=no"><meta charset="utf-8"><title>Simple Polylines</title><style>/* Always set the map height explicitly to define the size of the div
+* element that contains the map. */
+#map {
+height: 70%;
+width: 70%;
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+height: 100%;
+margin: 10px;
+padding: 0;
+}</style></head><body><h1>Current scenario</h1><div id="map"></div><script>var yo = [{ coord_array: [ { lng: 20, lat: 5 }, { lng: 4, lat: -30 }, { lng: 8, lat: 7 } ],
+  color: 'red' },{ coord_array: 
+   [ { lng: -20, lat: 72 },
+     { lng: -57, lat: 12 },
+     { lng: -87, lat: 18 } ],
+  color: 'blue' },{ coord_array: 
+   [ { lng: -20, lat: 72 },
+     { lng: -57, lat: 12 },
+     { lng: -87, lat: 18 } ],
+  color: 'blue' },{ coord_array: [ { lng: 103.78045130000001, lat: 1.2905347 } ],
+  color: 'green' },{ coord_array: [ { lng: 103.780495, lat: 1.2904455 } ],
+  color: 'green' },{ coord_array: 
+   [ { lng: 103.7804824, lat: 1.2904297 },
+     { lat: 1.2904164000000002, lng: 103.7804989 },
+     { lat: 1.2905687, lng: 103.7804561 },
+     { lat: 1.2905687, lng: 103.7804561 },
+     { lat: 1.2905687, lng: 103.7804561 } ],
+  color: 'green' }]
+// console.log(yo);
+var wow = [{invites:['5a65a6fc4d3ca7111566a61b'],
+  lng: 100,
+  lat: 50,
+  username: 'chutiya2',
+  loggedIn: true }]
+// console.log(wow);
+// This example creates a 2-pixel-wide red polyline showing the path of
+// the first trans-Pacific flight between Oakland, CA, and Brisbane,
+// Australia which was made by Charles Kingsford Smith.
+function initMap() {
+var map = new google.maps.Map(document.getElementById('map'), {
+zoom: 7,
+center: {lat: 1.2904807, lng: 103.7805023},
+mapTypeId: 'terrain'
+});
+
+yo.forEach(function(this_chain) {
+  var chain1_list = this_chain.coord_array;
+  console.log(chain1_list);
+  var chain1 = new google.maps.Polyline({
+  path: chain1_list,
+  geodesic: true,
+  strokeColor: this_chain.color,
+  strokeOpacity: 1.0,
+  strokeWeight: 2
+  });
+  chain1.setMap(map);
+});
+
+wow.forEach(function(this_user) {
+  // console.log(this_user);
+  var marker = new google.maps.Marker({
+    position: {lat: this_user.lat, lng: this_user.lng},
+    map: map,
+    title: this_user.username
+    });
+});
+
+var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+var meMarker = new google.maps.Marker({
+  position: {lat: 1.2904807, lng: 103.7805023},
+  map: map,
+  icon: image
+});
+
+}</script><script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5YKqBNhQ2DSXJYlVhj3Fr6b39X-NlWmA&amp;callback=initMap"></script><h2>Create chain and extend to -<ol><li> </li>chutiya2 <form action="/create_chain" method="POST"><input type="hidden" name="username" value="chutiya2"></form><input type="submit" value="Extend"></ol></h2><h2>Invitations<ol></ol></h2></body></html>

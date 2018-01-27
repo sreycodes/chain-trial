@@ -68,7 +68,10 @@ module.exports = function(passport) {
                 newUser.local.username = username;
                 newUser.local.password = newUser.generateHash(password);
                 newUser.local.loggedIn = true;
-
+                newUser.local.invites = [];
+                newUser.local.chain = null;
+                newUser.local.lat = -1;
+                newUser.local.lng = -1;
                 // save the user
                 newUser.save(function(err) {
                     if (err)

@@ -158,16 +158,21 @@ html
           window.location.reload();
           console.log(data);
         });
-    if !me.inviteSent
-      h2= 'Create chain and extend to -'
+    if !me.chain && !me.inviteSent 
+      h2= 'Create chain'
+        form(action='/create_chain', method='POST')
+          input(type='submit', value='Create chain', onclick="sendRefreshEvent()")
+    if me.chain && !me.inviteSent
+      h2= 'Extend to'
         ol
           each user in nearby_users
             if user
               li 
               | #{user.username} 
-              form(action='/create_chain', method='POST')
+              form(action='/extend_chain', method='POST')
                 input(type='hidden', name='username', value=user.username)
                 input(type='submit', value='Extend', onclick="sendRefreshEvent()")
+    if !me.chain && !me.inviteSent
     h2= 'Invitations'
       ol
         if me.invites

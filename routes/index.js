@@ -72,7 +72,7 @@ router.post('/join_chain', function(req, res, next) {
     chain.save(function(err, chain) {
       User.findOne({'_id': req.user._id}, function(err, user) {
             console.log("Updating user's chain");
-            user.local.chain = chain._id,
+            user.local.chain = chain.local.color,
             user.local.invites = [];
             user.save(function(err) {
               if(err) throw err;

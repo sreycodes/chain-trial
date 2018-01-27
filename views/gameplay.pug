@@ -45,7 +45,8 @@ html
     #map
     script.
       var yo = [#{chains_list}]
-      // console.log(yo);
+      console.log(yo);
+      console.log("^Printed yo");
       var wow = [#{nearby_users}]
       // console.log(wow);
       // This example creates a 2-pixel-wide red polyline showing the path of
@@ -139,10 +140,12 @@ html
       });
 
       yo.forEach(function(this_chain) {
+        console.log(this_chain.color);
         var chain1_list = this_chain.user_array.map(function(user) {
-          return {'lat': user.lat, 'lng': user.lng };
+          return {'lat': parseFloat(user.lat), 'lng': parseFloat(user.lng) };
         });
         console.log(chain1_list);
+        console.log("^Logged chain1_list");
         var chain1 = new google.maps.Polyline({
         path: chain1_list,
         geodesic: true,

@@ -32,7 +32,7 @@ router.get('/signup', isNotLoggedIn, function(req, res, next) {
 router.post('/create_chain', function(req, res, next) {
   chain = new Chain();
   chain.local.color = color_array.pop();
-  color_array.
+  color_array.shift();
   chain.local.coord_array = [];
   chain.local.coord_array.push({lat: req.user.local.lat,lng: req.user.local.lng});
   chain.save(function(err, chain) {
@@ -181,7 +181,7 @@ router.post('/login', passport.authenticate('local-login', {
 function isLoggedIn(req, res, next) {
 
     // if user is authenticated in the session, carry on 
-    if (req.isAuthenticated())
+    if (req.isAuthenticated() && req.user.loggedIn)
         return next();
 
     // if they aren't redirect them to the home page
@@ -191,7 +191,7 @@ function isLoggedIn(req, res, next) {
 function isNotLoggedIn(req, res, next) {
 
     // if user is authenticated in the session, log them out
-    if (req.isAuthenticated())
+    if (req.isAuthenticated() && !req.user.loggedIn)
         res.redirect('/logout');
 
     // if they aren't redirect them to the home page

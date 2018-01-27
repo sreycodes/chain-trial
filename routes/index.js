@@ -216,19 +216,31 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                   console.log(chain);
                   var user_array = chain.local.user_array;
                   user_array.forEach(function(user_in_chain, index) {
+                    console.log(user_array[index]);
                     if(user_in_chain.local.username == req.user.local.username) {
-                      console.log("User found: " + user_array[index].username);
+                      console.log("User found: " + user_array[index].local.username);
                       console.log(req.body.lat + "  " + req.body.lng);
                       user_array[index].local.lat = req.body.lat;
                       user_array[index].local.lng = req.body.lng;
                     }
                   });
                   chain.local.user_array = user_array;
-                  console.log("New chain: " + chain);
-                  chain.save(function(err, chain) {
-                    
+                  console.log("New chain: " + JSON.stringify(chain));
+
+                  // chain5 = new Chain();
+                  // chain5.local = chain.local;
+                  // //chain5._id = {"$oid": "5a6bd6e9afc1d02c512f9ee0"};
+                  // chain5.save(function(err, chain3) {
+                  //   if(err) throw err;
+                  //   console.log("Saving a chutiya chain");
+                  // });
+
+                  Chain.update({'local.color' : req.user.local.chain},{'local' : chain.local}, function(err, affected) {
+                    if(err) throw err;
+                    console.log(JSON.stringify(affected));
+                    // console.log(chain2 == chain);
                     //Check if chain is valid and self intersection and other intersections
-                    console.log("Chain co-ordinates updated");
+                    console.log("Chain co-ordinates updated: " + JSON.stringify(chain));
                     var user_array2 = chain.local.user_array;
                     var edge = [];
                     for(var i = 0; i < user_array2.length - 1; i++) {
@@ -239,13 +251,18 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                     var ok = 1, M = 100000;
                     for(var i = 0; i < edge.length; i++) {
                       var dist = geodist([edge[i].f.local.lat, edge[i].f.local.lng], [edge[i].s.local.lat, edge[i].s.local.lng], {format: false, unit: 'km'});
-                      if(dist > 10) ok = 0;
+                      if(dist > 10) {
+
+                        console.log("Edge greater than 10");
+                        ok = 0;
+                      }
                       for(var j = i + 2; j < edge.length; j++) {
                         p1 = [edge[i].f.local.lat * M, edge[i].f.local.lng * M];
                         p2 = [edge[i].s.local.lat * M, edge[i].s.local.lng * M];
                         p3 = [edge[j].f.local.lat * M, edge[j].f.local.lng * M];
                         p4 = [edge[j].s.local.lat * M, edge[j].s.local.lng * M];
                         if(intersects([p1, p2], [p3, p4])) {
+                          console.log("Self intersection");
                           ok = 0;
                         }
                       }
@@ -362,8 +379,9 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                         }
                       });
                     }
+                    console.log("Chain after saving: ");
                     res.end();
-                    return;
+                    //return;
                   });
                 });
             });

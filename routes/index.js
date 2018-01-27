@@ -200,14 +200,19 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
             user.local.lat = req.body.lat;
             user.local.lng = req.body.lng;
             console.log(req.user);
+            console.log("MEIN YAHA HUN");
             user.save((err, user) => {
                 if(err) throw err;
                 if(req.user.local.chain === null || req.user.local.chain == "deleted") {
                   //.log(req.user);
+                  console.log("I AM RETURNING HERE");
                   res.end();
                   return;
                 }
+                console.log("HERE NOW BC");
+                console.log(req.user.local.chain);
                 Chain.findOne({'local.color' : req.user.local.chain}, function(err, chain) {
+                  console.log("WTF");
                   console.log(chain);
                   var user_array = chain.local.user_array;
                   user_array.forEach(function(user_in_chain, index) {

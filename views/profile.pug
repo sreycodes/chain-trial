@@ -42,21 +42,26 @@ html(lang='en')
           use(xlink:href='#cup')
         |     Leaderboard              Points
       ol
-        li
-          mark #{rankedUsers[0].username}
-          small #{rankedUsers[0].points}
-        li
-          mark #{rankedUsers[1].username}
-          small #{rankedUsers[1].points}
-        li
-          mark #{rankedUsers[2].username}
-          small #{rankedUsers[2].points}
-        li
-          mark #{rankedUsers[3].username}
-          small #{rankedUsers[3].points}
-        li
-          mark #{rankedUsers[4].username}
-          small #{rankedUsers[4].points}
+        if rankedUsers[0]
+          li
+            mark #{rankedUsers[0].username}
+            small #{rankedUsers[0].points}
+        if rankedUsers[1]
+          li
+            mark #{rankedUsers[1].username}
+            small #{rankedUsers[1].points}
+        if rankedUsers[2]
+          li
+            mark #{rankedUsers[2].username}
+            small #{rankedUsers[2].points}
+        if rankedUsers[3]
+          li
+            mark #{rankedUsers[3].username}
+            small #{rankedUsers[3].points}
+        if rankedUsers[4]
+          li
+            mark #{rankedUsers[4].username}
+            small #{rankedUsers[4].points}
       br
     svg(style='display: none;')
       symbol#cup(x='0px', y='0px', width='25px', height='26px', viewbox='0 0 25 26', enable-background='new 0 0 25 26', xml:space='preserve')

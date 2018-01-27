@@ -1,3 +1,3 @@
 git add -A
 git commit -m "$1"
-git push origin hackathon1
+git push origin hackathon2

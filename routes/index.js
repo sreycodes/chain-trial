@@ -354,7 +354,19 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
 }); //router.post
 
 router.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile', {title: "Your co-ordinates"})
+        User.find({}, 'local')
+        .exec(function(err, list_users) {
+          list_users.sort(function(user1, user2) {
+            if(user1.points > user2.points) {
+              return -1;
+            } else if(user1.points < user2.points) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+        });
+        res.render('profile', {rankedUsers: list_users, me: req.user.local});
     });
 
     // =====================================

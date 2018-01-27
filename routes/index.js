@@ -224,12 +224,12 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                           var user_array3 = list_chains[i].local.user_array;
                           console.log("User array of other chain:" + JSON.stringify(user_array3));
                           for(var j = 0; j < user_array3.length - 1; j++) {
-                            p1 = [user_array3[j].local.lat, user_array3[j].local.lng]; //User array 3 first co-ordinate
-                            p2 = [user_array3[j + 1].local.lat, user_array3[j + 1].local.lng]; // User array 3 second co-ordinate
+                            p1 = [user_array3[j].local.lat * M, user_array3[j].local.lng * M]; //User array 3 first co-ordinate
+                            p2 = [user_array3[j + 1].local.lat * M, user_array3[j + 1].local.lng * M]; // User array 3 second co-ordinate
                             console.log("My chain user array: " + JSON.stringify(user_array2));
                             for(var k = 0; k < user_array2.length - 1; k++) {
-                              p3 = [user_array2[k].local.lat, user_array2[k].local.lng]; //User array 2 first co-ordinate
-                              p4 = [user_array2[k + 1].local.lat, user_array2[k + 1].local.lng]; //User array 2 second co-ordinate
+                              p3 = [user_array2[k].local.lat * M, user_array2[k].local.lng * M]; //User array 2 first co-ordinate
+                              p4 = [user_array2[k + 1].local.lat * M, user_array2[k + 1].local.lng * M]; //User array 2 second co-ordinate
                               console.log(p1 + "   " + p2 + " " + p3 + "  " + p4);
                               if(intersects([p1, p2], [p3, p4])) {
                                 console.log("Intersected");

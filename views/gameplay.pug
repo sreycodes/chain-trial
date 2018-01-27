@@ -2,6 +2,7 @@ doctype html
 html
   head
     meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
+    meta(http-equiv='refresh', content='60')
     meta(charset='utf-8')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
     title Simple Polylines
@@ -18,6 +19,27 @@ html
       margin: 10px;
       padding: 0;
       }
+  script.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => { 
+                                                  console.log('Ajax request started');
+                                                  var ajaxRequest = 
+                                                      $.ajax({
+                                                        type: "POST",
+                                                        url: "/get_coord",
+                                                        dataType: "json",
+                                                        data: {
+                                                            lat: position.coords.latitude,
+                                                            lng: position.coords.longitude
+                                                        }
+                                                      });
+                                                  $(document).ajaxComplete(function(event, request, settings) {
+                                                    console.log("Ajax request Sent");
+                                                  });
+                                                });
+    } else {
+        console.log('Your browser is out of fashion, there\'s no geolocation!');
+    }
   body
     h1= 'Current scenario'
     #map
@@ -160,6 +182,8 @@ html
           window.location.reload();
           console.log(data);
         });
+    if me.chain == "deleted"
+      h2= 'Your chain got deleted. Sorry :( Better luck next time.'
     if !me.chain && !me.inviteSent 
       h2= 'Create chain'
         form(action='/create_chain', method='POST')

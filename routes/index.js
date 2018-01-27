@@ -105,7 +105,7 @@ router.get('/gameplay', isLoggedIn, function(req, res, next) {
     var new_list_users = [];
     list_users.forEach(function(user, index) {
       var dist = geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng], {format: false, unit: 'km'});
-      if(!user.local.inviteSent && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn) {
+      if(!user.local.chain && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn && !req.user.local.inviteSent) {
         new_list_users.push(user.local);
       }
     });

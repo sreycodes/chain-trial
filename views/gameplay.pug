@@ -54,7 +54,7 @@ html
       // Australia which was made by Charles Kingsford Smith.
       function initMap() {
       var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 7,
+      zoom: 15,
       center: {lat: #{me.lat}, lng: #{me.lng}},
       mapTypeId: 'terrain',
       styles: [
@@ -154,22 +154,30 @@ html
         strokeWeight: 2
         });
         chain1.setMap(map);
+        chain1_list.forEach(function(coord) {
+          var marker = new google.maps.Marker({
+            position: {'lat': parseFloat(coord.lat), 'lng': parseFloat(coord.lng)},
+            map: map
+          });
+        });
       });
 
+      var image_green = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
       wow.forEach(function(this_user) {
         // console.log(this_user);
         var marker = new google.maps.Marker({
           position: {lat: this_user.lat, lng: this_user.lng},
           map: map,
+          icon: image_green,
           title: this_user.username
           });
       });
 
-      var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+      var image_me = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
       var meMarker = new google.maps.Marker({
         position: {lat: #{me.lat}, lng: #{me.lng}},
         map: map,
-        icon: image
+        icon: image_me
       });
 
       }

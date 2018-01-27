@@ -34,7 +34,7 @@ io.on('connection', function(socket) {
       }, 5000);
    });
    socket.on('disconnect', function () {
-      console.log('Disconnected');
+      // console.log('Disconnected');
    });
 }); 
 

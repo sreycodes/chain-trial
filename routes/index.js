@@ -199,6 +199,7 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
 
             user.local.lat = req.body.lat;
             user.local.lng = req.body.lng;
+            console.lpg(req.user);
             user.save((err, user) => {
                 if(err) throw err;
                 if(req.user.local.chain === null || req.user.local.chain == "deleted") {
@@ -207,18 +208,22 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                   return;
                 }
                 Chain.findOne({'local.color' : req.user.local.chain}, function(err, chain) {
+                  console.log(chain);
                   var user_array = chain.local.user_array;
                   user_array.forEach(function(user_in_chain, index) {
                     if(user_in_chain.local.username == req.user.local.username) {
+                      console.log("User found: " + user_array[index].username);
+                      console.log(req.body.lat + "  " + req.body.lng);
                       user_array[index].local.lat = req.body.lat;
                       user_array[index].local.lng = req.body.lng;
                     }
                   });
                   chain.local.user_array = user_array;
+                  console.log("New chain: " + chain);
                   chain.save(function(err, chain) {
                     
                     //Check if chain is valid and self intersection and other intersections
-                    //console.log("Chain co-ordinates updated");
+                    console.log("Chain co-ordinates updated");
                     var user_array2 = chain.local.user_array;
                     var edge = [];
                     for(var i = 0; i < user_array2.length - 1; i++) {

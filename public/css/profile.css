@@ -1,3 +1,20 @@
+.my_pos {
+  font-size: 30px;
+  font-family: Poppins-Medium;
+  position: relative;
+  top: 10%;
+  text-align: center;
+}
+
+.my_points {
+  font-size: 30px;
+  font-family: Poppins-Medium;
+  position: relative;
+  top: -60px;
+  text-align: right;
+  padding: 50px;
+}
+
 .play-btn {
   font-family: Poppins-Medium;
   font-size: 16px;

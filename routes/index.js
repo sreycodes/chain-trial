@@ -147,6 +147,51 @@ router.get('/gameplay', isLoggedIn, function(req, res, next) {
 
 });
 
+// if(intersects([p1, p2], [p3, p4])) {
+//                                 var my_sz = user_array2.length, opponent_sz = usser_array3.length;
+//                                 console.log("Intersected");
+//                                 if(my_sz >= opponent_sz / 2) {
+//                                   Chain.findOneAndRemove({'local.color' : list_chains[i].local.color}, function(err, chain2) {
+//                                     console.log("Deleting opponent's chain" + chain2);
+//                                     User.find({'local.chain' : chain2.local.color}, 'local.chain local.inviteSent local.invites')
+//                                       .exec(function(err, list_users) {
+//                                         if(err) throw err;
+//                                         list_users.forEach(function(user, index) {
+//                                           list_users[index].local.chain = "deleted";
+//                                           list_users[index].local.inviteSent = false;
+//                                           list_users[index].local.invites = [];
+//                                           list_users[index].save(function(err, user) {
+//                                             if(err) throw err;
+//                                             console.log(user.local.chain + "means deleted");
+//                                             res.end();
+//                                             return;
+//                                           });
+//                                         });
+//                                       });
+//                                   });
+//                                 } else if(my_sz <= opponent_sz / 2) {
+//                                   Chain.findOneAndRemove({'local.color' : chain.local.color}, function(err, chain2) {
+//                                     console.log("Deleting my chain" + chain2);
+//                                     User.find({'local.chain' : chain2.local.color}, 'local.chain local.inviteSent local.invites')
+//                                       .exec(function(err, list_users) {
+//                                         if(err) throw err;
+//                                         list_users.forEach(function(user, index) {
+//                                           list_users[index].local.chain = "deleted";
+//                                           list_users[index].local.inviteSent = false;
+//                                           list_users[index].local.invites = [];
+//                                           list_users[index].save(function(err, user) {
+//                                             if(err) throw err;
+//                                             console.log(user.local.chain + "means deleted");
+//                                             res.end();
+//                                             return;
+//                                           });
+//                                         });
+//                                       });
+//                                   });
+//                                 }
+//                               }
+
+
 
 router.post('/get_coord', isLoggedIn, function(req, res, next) {
 
@@ -231,25 +276,69 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                               p4 = [user_array2[k + 1].local.lat * M, user_array2[k + 1].local.lng * M]; //User array 2 second co-ordinate
                               console.log(p1 + "   " + p2 + " " + p3 + "  " + p4);
                               if(intersects([p1, p2], [p3, p4])) {
+                                var my_sz = user_array2.length, opponent_sz = user_array3.length;
                                 console.log("Intersected");
-                                Chain.findOneAndRemove({'local.color' : list_chains[i].local.color}, function(err, chain2) {
-                                  console.log("Deleting opponent's chain" + chain2);
-                                  User.find({'local.chain' : chain2.local.color}, 'local.chain local.inviteSent local.invites')
-                                    .exec(function(err, list_users) {
-                                      if(err) throw err;
-                                      list_users.forEach(function(user, index) {
-                                        list_users[index].local.chain = "deleted";
-                                        list_users[index].local.inviteSent = false;
-                                        list_users[index].local.invites = [];
-                                        list_users[index].save(function(err, user) {
-                                          if(err) throw err;
-                                          console.log(user.local.chain + "means deleted");
-                                          res.end();
-                                          return;
+                                if(my_sz >= opponent_sz / 2) {
+                                  User.find({'local.chain' : chain.local.color}, 'local.points local.username')
+                                  .exec(function(err, list_users) {
+                                    list_users.forEach(function(user, index) {
+                                      if(list_users[index].local.username == user_array2[k].local.username || list_users[index].local.username == user_array2[k].local.username) {
+                                        list_users[index].local.points += (500  * opponent_sz);
+                                      } else {
+                                        list_users[index].local.points += (100  * opponent_sz);
+                                      }
+                                    });
+                                  }); 
+                                  Chain.findOneAndRemove({'local.color' : list_chains[i].local.color}, function(err, chain2) {
+                                    console.log("Deleting opponent's chain" + chain2);
+                                    User.find({'local.chain' : chain2.local.color}, 'local.chain local.inviteSent local.invites')
+                                      .exec(function(err, list_users) {
+                                        if(err) throw err;
+                                        list_users.forEach(function(user, index) {
+                                          list_users[index].local.chain = "deleted";
+                                          list_users[index].local.inviteSent = false;
+                                          list_users[index].local.invites = [];
+                                          list_users[index].save(function(err, user) {
+                                            if(err) throw err;
+                                            console.log(user.local.chain + " means deleted");
+                                            res.end();
+                                            return;
+                                          });
                                         });
                                       });
+                                  });
+                                } else if(my_sz / 2 <= opponent_sz) {
+                                  User.find({'local.chain' : list_chains[i].local.color}, 'local.points local.username')
+                                  .exec(function(err, list_users) {
+                                    list_users.forEach(function(user, index) {
+                                      if(list_users[index].local.username == user_array3[k].local.username || list_users[index].local.username == user_array3[k].local.username) {
+                                        list_users[index].local.points += (500  * opponent_sz);
+                                      } else {
+                                        list_users[index].local.points += (100  * opponent_sz);
+                                      }
                                     });
-                                });
+                                  });
+                                  Chain.findOneAndRemove({'local.color' : chain.local.color}, function(err, chain2) {
+                                    console.log("Deleting my chain" + chain2);
+                                    User.find({'local.chain' : chain2.local.color}, 'local.chain local.inviteSent local.invites')
+                                      .exec(function(err, list_users) {
+                                        if(err) throw err;
+                                        list_users.forEach(function(user, index) {
+                                          list_users[index].local.chain = "deleted";
+                                          list_users[index].local.inviteSent = false;
+                                          list_users[index].local.invites = [];
+                                          list_users[index].save(function(err, user) {
+                                            if(err) throw err;
+                                            console.log(user.local.chain + " means deleted");
+                                            res.end();
+                                            return;
+                                          });
+                                        });
+                                      });
+                                  });
+                                } else {
+                                  continue;
+                                }
                               }
                             }
                           }

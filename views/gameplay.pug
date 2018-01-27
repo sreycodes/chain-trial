@@ -155,10 +155,15 @@ html
         });
         chain1.setMap(map);
         chain1_list.forEach(function(coord) {
-          var marker = new google.maps.Marker({
-            position: {'lat': parseFloat(coord.lat), 'lng': parseFloat(coord.lng)},
-            map: map
-          });
+          if(coord.lat == '#{me.lat}' && coord.lng == '#{me.lng}') {
+            console.log("WOW");
+          }
+          else {
+            var marker = new google.maps.Marker({
+              position: {'lat': parseFloat(coord.lat), 'lng': parseFloat(coord.lng)},
+              map: map
+            });
+          }
         });
       });
 
@@ -173,11 +178,12 @@ html
           });
       });
 
-      var image_me = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+      var image_me = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
       var meMarker = new google.maps.Marker({
         position: {lat: #{me.lat}, lng: #{me.lng}},
         map: map,
-        icon: image_me
+        icon: image_me,
+        title: 'Me'
       });
 
       }

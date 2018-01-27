@@ -30,10 +30,14 @@ router.get('/signup', isNotLoggedIn, function(req, res, next) {
 // });
 
 router.post('/create_chain', function(req, res, next) {
-  chain = new Chain();
-  chain.local.color = color_array.pop();
-  color_array.shift();
-  chain.local.coord_array = [];
+  if(!req.user.local.color) {
+    chain = new Chain();
+    chain.local.color = color_array.pop();
+    color_array.shift();
+    chain.local.coord_array = [];
+  } else {
+    
+  }
   chain.local.coord_array.push({lat: req.user.local.lat,lng: req.user.local.lng});
   chain.save(function(err, chain) {
     if(err) throw(err);

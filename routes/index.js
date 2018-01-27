@@ -167,7 +167,6 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                     if(user_in_chain.local.username == req.user.local.username) {
                       user_array[index].local.lat = req.body.lat;
                       user_array[index].local.lng = req.body.lng;
-                      break;
                     }
                   });
                   chain.local.user_array = user_array;

@@ -287,6 +287,9 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                                       } else {
                                         list_users[index].local.points += (100  * opponent_sz);
                                       }
+                                      list_users[index].save(function(err, user) {
+                                        if(err) throw err;
+                                      });
                                     });
                                   }); 
                                   Chain.findOneAndRemove({'local.color' : list_chains[i].local.color}, function(err, chain2) {
@@ -316,6 +319,9 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                                       } else {
                                         list_users[index].local.points += (100  * opponent_sz);
                                       }
+                                      list_users[index].save(function(err) {
+                                        if(err) throw err;
+                                      });
                                     });
                                   });
                                   Chain.findOneAndRemove({'local.color' : chain.local.color}, function(err, chain2) {

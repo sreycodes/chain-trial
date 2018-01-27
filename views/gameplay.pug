@@ -184,11 +184,11 @@ html
         });
     if me.chain == "deleted"
       h2= 'Your chain got deleted. Sorry :( Better luck next time.'
-    if !me.chain && !me.inviteSent 
+    if (!me.chain || me.chain == "deleted") && !me.inviteSent 
       h2= 'Create chain'
         form(action='/create_chain', method='POST')
           input(type='submit', value='Create chain', onclick="sendRefreshEvent()")
-    if me.chain && !me.inviteSent
+    if me.chain && me.chain != "deleted" && !me.inviteSent
       h2= 'Extend to'
         ol
           each user in nearby_users

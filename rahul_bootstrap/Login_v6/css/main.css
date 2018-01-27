@@ -427,7 +427,7 @@ iframe {
 /*//////////////////////////////////////////////////////////////////
 [ Login more ]*/
 .login-more li {
-  position: absolute;
+  position: relative;
   padding-left: 16px;
 }
 

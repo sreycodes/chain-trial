@@ -181,7 +181,7 @@ router.post('/login', passport.authenticate('local-login', {
 function isLoggedIn(req, res, next) {
 
     // if user is authenticated in the session, carry on 
-    if (req.isAuthenticated() && req.user.loggedIn)
+    if (req.isAuthenticated())
         return next();
 
     // if they aren't redirect them to the home page
@@ -191,7 +191,7 @@ function isLoggedIn(req, res, next) {
 function isNotLoggedIn(req, res, next) {
 
     // if user is authenticated in the session, log them out
-    if (req.isAuthenticated() && !req.user.loggedIn)
+    if (req.isAuthenticated())
         res.redirect('/logout');
 
     // if they aren't redirect them to the home page

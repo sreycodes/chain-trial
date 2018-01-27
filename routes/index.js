@@ -365,8 +365,8 @@ router.get('/profile', isLoggedIn, function(req, res) {
               return 0;
             }
           });
+          res.render('profile', {rankedUsers: list_users, me: req.user.local});
         });
-        res.render('profile', {rankedUsers: list_users, me: req.user.local});
     });
 
     // =====================================

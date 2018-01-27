@@ -152,8 +152,8 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
 
     User.findOne({ 'local.username' :  req.user.local.username }, function(err, user) {
 
-            //user.local.lat = req.body.lat;
-            //user.local.lng = req.body.lng;
+            user.local.lat = req.body.lat;
+            user.local.lng = req.body.lng;
             user.save((err, user) => {
                 if(err) throw err;
                 if(req.user.local.chain === null || req.user.local.chain == "deleted") {
@@ -165,9 +165,9 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                   var user_array = chain.local.user_array;
                   user_array.forEach(function(user_in_chain, index) {
                     if(user_in_chain.local.username == req.user.local.username) {
-                      //user_array[index].local.lat = req.body.lat;
-                      //user_array[index].local.lng = req.body.lng;
-                      //break;
+                      user_array[index].local.lat = req.body.lat;
+                      user_array[index].local.lng = req.body.lng;
+                      break;
                     }
                   });
                   chain.local.user_array = user_array;

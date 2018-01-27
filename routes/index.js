@@ -44,10 +44,10 @@ router.post('/create_chain', function(req, res, next) {
       chain.local.user_array.push(modified_user);
       chain.save(function(err, chain) {
         if(err) throw(err);
-        console.log("Chain created");
+        // console.log("Chain created");
         // console.log(chain);
         User.findOne({'local.username' : req.user.local.username}, function(err, user) {
-                      console.log("User updated");
+                      //console.log("User updated");
                       user.local.chain = chain.local.color;
                       user.local.points += 50;
                       user.save(function(err) {
@@ -63,7 +63,7 @@ router.post('/create_chain', function(req, res, next) {
 router.post('/extend_chain', function(req, res, next) {
 
   User.findOne({'local.username' : req.body.username}, function(err, user) {
-                console.log("User updated");
+                //console.log("User updated");
                 user.local.invites.push(req.user.local.chain);
                 user.save(function(err) {
                   if(err) throw err;
@@ -87,7 +87,7 @@ router.post('/join_chain', function(req, res, next) {
     chain.local.user_array.push(modified_user);
     chain.save(function(err, chain) {
       User.findOne({'_id': req.user._id}, function(err, user) {
-            console.log("Updating user's chain");
+            //console.log("Updating user's chain");
             user.local.chain = chain.local.color,
             user.local.invites = [];
             user.local.points += 50;
@@ -131,15 +131,15 @@ router.get('/gameplay', isLoggedIn, function(req, res, next) {
     .exec(function(err, list_chains) {
       // console.log(list_chains);
       list_chains.forEach(function(chain, index) {
-        console.log(list_chains[index]);
+        //console.log(list_chains[index]);
         list_chains[index].local.user_array = list_chains[index].local.user_array.map(function(user) {
           return user.local;
         });
         list_chains[index] = list_chains[index].local;
-        console.log(list_chains[index]);
+        //console.log(list_chains[index]);
       }); 
       // console.log(coord_array);
-      console.log(list_chains);
+      //console.log(list_chains);
       // console.log(new_list_users);
       res.render('gameplay', {me: req.user.local, chains_list: list_chains, nearby_users: new_list_users});
     });
@@ -202,7 +202,7 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
             user.save((err, user) => {
                 if(err) throw err;
                 if(req.user.local.chain === null || req.user.local.chain == "deleted") {
-                  console.log(req.user);
+                  //.log(req.user);
                   res.end();
                   return;
                 }
@@ -218,7 +218,7 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                   chain.save(function(err, chain) {
                     
                     //Check if chain is valid and self intersection and other intersections
-                    console.log("Chain co-ordinates updated");
+                    //console.log("Chain co-ordinates updated");
                     var user_array2 = chain.local.user_array;
                     var edge = [];
                     for(var i = 0; i < user_array2.length - 1; i++) {
@@ -242,6 +242,7 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
                     }
                     console.log("OK: " + ok);
                     if(ok === 0) {
+                      console.log("Redundant1");
                       Chain.findOneAndRemove({'local.color' : chain.local.color}, function(err, chain2) {
                         console.log(chain2);
                         User.find({'local.chain' : chain2.local.color}, 'local.chain local.inviteSent local.invites')
@@ -364,7 +365,7 @@ router.get('/profile', isLoggedIn, function(req, res) {
         .exec(function(err, list_users) {
           list_users = list_users.map((user) => user.local);
           list_users.sort(function(user1, user2) {
-            console.log(user1);
+            //console.log(user1);
             if(user1.points > user2.points) {
               return -1;
             } else if(user1.points < user2.points) {
@@ -377,7 +378,7 @@ router.get('/profile', isLoggedIn, function(req, res) {
           for(var i = 0; i < list_users.length; i++) {
             if(list_users[i].username == req.user.local.username) me_index = i + 1;
           }
-          console.log(list_users);
+          //console.log(list_users);
           res.render('profile', {rankedUsers: list_users, me_index: me_index, me: req.user.local});
         });
     });

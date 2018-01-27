@@ -12,8 +12,9 @@ var userSchema = mongoose.Schema({
         loggedIn     : Boolean,
         lat          : Number,
         lng          : Number,
-        chain : { type: Schema.ObjectId, ref: 'Chain'},
-        invites : Array
+        chain : String,
+        invites : Array,
+        inviteSent : Boolean
     }
 
 });

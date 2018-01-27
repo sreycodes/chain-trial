@@ -32,32 +32,38 @@ router.get('/signup', isNotLoggedIn, function(req, res, next) {
 router.post('/create_chain', function(req, res, next) {
   chain = new Chain();
   chain.local.color = color_array.pop();
+  color_array.
   chain.local.coord_array = [];
   chain.local.coord_array.push({lat: req.user.local.lat,lng: req.user.local.lng});
   chain.save(function(err, chain) {
     if(err) throw(err);
     console.log("Chain created");
     // console.log(chain);
-    User.update({'local.username' : req.user.local.username},{'local.chain' : req.body.chainID},
-                function(err, user) {
-                  if(err) throw err;
+    User.findOne({'local.username' : req.user.local.username}, function(err, user) {
                   console.log("User updated");
-                  User.findOne({'local.username' : req.body.username},
-                                function(err, user) {
-                                  if(err) throw err;
-                                  if(user.local.invites) {
-                                    user.local.invites.push(chain.local.color); //Assuming different colors for all chains
-                                  } else {
-                                    user.local.invites = [chain.local.color];
-                                  }
-                                  console.log("Invite sent")
-                                  user.save(function(err) {
-                                              if(err) throw err;
-                                              else res.redirect('/gameplay');
-                                            });
-                              });
+                  user.local.chain = chain.local.color;
+                  user.local.inviteSent = true;
+                  user.save(function(err) {
+                    if(err) throw err;
+                    else {
+                      User.findOne({'local.username' : req.body.username},
+                                  function(err, user) {
+                                    if(err) throw err;
+                                    if(user.local.invites) {
+                                      user.local.invites.push(chain.local.color); //Assuming different colors for all chains
+                                    } else {
+                                      user.local.invites = [chain.local.color];
+                                    }
+                                    console.log("Invite sent")
+                                    user.save(function(err) {
+                                                if(err) throw err;
+                                                else res.redirect('/gameplay');
+                                              });
+                                });
+                            }
+                      });
                 });
-  });
+        });
 });
 
 router.post('/join_chain', function(req, res, next) {

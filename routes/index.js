@@ -199,7 +199,7 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
 
             user.local.lat = req.body.lat;
             user.local.lng = req.body.lng;
-            console.lpg(req.user);
+            console.log(req.user);
             user.save((err, user) => {
                 if(err) throw err;
                 if(req.user.local.chain === null || req.user.local.chain == "deleted") {

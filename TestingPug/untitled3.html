@@ -1,0 +1,146 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="initial-scale=1.0, user-scalable=no"><meta charset="utf-8"><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><title>Simple Polylines</title><style>/* Always set the map height explicitly to define the size of the div
+* element that contains the map. */
+#map {
+height: 70%;
+width: 70%;
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+height: 100%;
+margin: 10px;
+padding: 0;
+}</style></head><body><h1>Current scenario</h1><div id="map"></div><script>var yo = [{ user_array: [ { _id: "5a6c751f4d9a512338253f7d", __v: 0, local: [Object] } ],
+  color: 'black' }]
+// console.log(yo);
+var wow = []
+// console.log(wow);
+// This example creates a 2-pixel-wide red polyline showing the path of
+// the first trans-Pacific flight between Oakland, CA, and Brisbane,
+// Australia which was made by Charles Kingsford Smith.
+function initMap() {
+var map = new google.maps.Map(document.getElementById('map'), {
+zoom: 7,
+center: {lat: 1.3063958999999998, lng: 103.7733519},
+mapTypeId: 'terrain',
+styles: [
+      {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+      {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+      {elementType: 'labels.text.fill', stylers: [{color: '#ffffff'}]}, //'#746855'}]},
+      {
+        featureType: 'administrative.locality',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#d59563'}]
+      },
+      {
+        featureType: 'poi',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#d59563'}]
+      },
+      {
+        featureType: 'poi.park',
+        elementType: 'geometry',
+        stylers: [{color: '#263c3f'}]
+      },
+      {
+        featureType: 'poi.park',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#6b9a76'}]
+      },
+      {
+        featureType: 'road',
+        elementType: 'geometry',
+        stylers: [{color: '#38414e'}]
+      },
+      {
+        featureType: 'road',
+        elementType: 'geometry.stroke',
+        stylers: [{color: '#212a37'}]
+      },
+      {
+        featureType: 'road',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#9ca5b3'}]
+      },
+      {
+        featureType: 'road.highway',
+        elementType: 'geometry',
+        stylers: [{color: '#746855'}]
+      },
+      {
+        featureType: 'road.highway',
+        elementType: 'geometry.stroke',
+        stylers: [{color: '#1f2835'}]
+      },
+      {
+        featureType: 'road.highway',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#f3d19c'}]
+      },
+      {
+        featureType: 'transit',
+        elementType: 'geometry',
+        stylers: [{color: '#2f3948'}]
+      },
+      {
+        featureType: 'transit.station',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#d59563'}]
+      },
+      {
+        featureType: 'water',
+        elementType: 'geometry',
+        stylers: [{color: '#17263c'}]
+      },
+      {
+        featureType: 'water',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#515c6d'}]
+      },
+      {
+        featureType: 'water',
+        elementType: 'labels.text.stroke',
+        stylers: [{color: '#17263c'}]
+      }
+    ]
+});
+
+yo.forEach(function(this_chain) {
+  var chain1_list = this_chain.user_array.map(function(user) {
+    return {'lat': user.local.lat, 'lng': user.local.lng};
+  });
+  console.log(chain1_list);
+  var chain1 = new google.maps.Polyline({
+  path: chain1_list,
+  geodesic: true,
+  strokeColor: this_chain.color,
+  strokeOpacity: 1.0,
+  strokeWeight: 2
+  });
+  chain1.setMap(map);
+});
+
+wow.forEach(function(this_user) {
+  // console.log(this_user);
+  var marker = new google.maps.Marker({
+    position: {lat: this_user.lat, lng: this_user.lng},
+    map: map,
+    title: this_user.username
+    });
+});
+
+var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+var meMarker = new google.maps.Marker({
+  position: {lat: 1.3063958999999998, lng: 103.7733519},
+  map: map,
+  icon: image
+});
+
+}</script><script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5YKqBNhQ2DSXJYlVhj3Fr6b39X-NlWmA&amp;callback=initMap"></script><script src="/socket.io/socket.io.js"></script><script>var socket = io();
+function sendRefreshEvent() { 
+  console.log("Sent client event");
+  socket.emit('mapChanged', 'Sent an event from the client!');
+}
+socket.on('refreshAll', function(data) {
+  window.location.reload();
+  console.log(data);
+});</script><h2>Invitations<ol></ol></h2></body></html>

@@ -4,13 +4,13 @@ var passport = require('passport')
 var User = require('../config/mongoose_setup');
 var Chain = require('../config/mongoose_setup2');
 var geodist = require('geodist');
-var color_array = ['blue', 'green', 'red', 'yellow', 'white', 'black']
+var intersects = require('line-segments-intersect');
+var color_array = ['blue', 'green', 'red', 'yellow', 'white', 'black'] //Have to put in database
 
 /* GET home page. */
 router.get('/', isNotLoggedIn, function(req, res, next) {
   res.render('index', { title: 'Registration' });
 });
-
 
 router.get('/login', isNotLoggedIn, function(req, res, next) {
   res.render('login', { title: 'Login', message : req.flash('loginMessage')  });
@@ -32,47 +32,65 @@ router.get('/signup', isNotLoggedIn, function(req, res, next) {
 router.post('/create_chain', function(req, res, next) {
   
   chain = new Chain();
-  chain.local.color = color_array.pop();
-  color_array.shift();
-  chain.local.coord_array = [];
-  chain.local.coord_array.push({lat: req.user.local.lat,lng: req.user.local.lng});
-  chain.save(function(err, chain) {
-    if(err) throw(err);
-    console.log("Chain created");
-    // console.log(chain);
-    User.findOne({'local.username' : req.user.local.username}, function(err, user) {
-                  console.log("User updated");
-                  user.local.chain = chain.local.color;
-                  user.local.inviteSent = true;
-                  user.save(function(err) {
-                    if(err) throw err;
-                    else res.redirect('/gameplay');
-                  });
-            });
+  var index = 0;
+  User.findOne({'local.username' : 'admin'}, function(err, user) {
+    index = user.local.points;
+    user.local.points++;
+    user.save(function(err) {
+      if(err) throw err;
+      chain.local.color = color_array[index];
+      chain.local.user_array = [];
+      var modified_user = {'local': req.user.local};
+      chain.local.user_array.push(modified_user);
+      chain.save(function(err, chain) {
+        if(err) throw(err);
+        console.log("Chain created");
+        // console.log(chain);
+        User.findOne({'local.username' : req.user.local.username}, function(err, user) {
+                      console.log("User updated");
+                      user.local.chain = chain.local.color;
+                      user.local.points += 50;
+                      user.save(function(err) {
+                        if(err) throw err;
+                        else res.redirect('/gameplay');
+                      });
+                });
+          });
       });
+  });
 });
 
 router.post('/extend_chain', function(req, res, next) {
 
   User.findOne({'local.username' : req.body.username}, function(err, user) {
                 console.log("User updated");
-                user.local.invites.push(req.user.local.color);
-                user.local.inviteSent = true;
+                user.local.invites.push(req.user.local.chain);
                 user.save(function(err) {
                   if(err) throw err;
-                  else res.redirect('/gameplay');  
+                  else {
+                    User.findOne({'_id': req.user._id}, function(err, user) {
+                      user.local.points += 50;
+                      user.local.inviteSent = true
+                      user.save(function(err) {
+                        if(err) throw err;
+                        else res.redirect('/gameplay');
+                      })
+                    });
+                  }  
               });
        });
 });
 
 router.post('/join_chain', function(req, res, next) {
   Chain.findOne({'local.color': req.body.chain_color}, function(err, chain) {
-    chain.local.coord_array.push({lat : req.user.local.lat,lng : req.user.local.lng});
+    var modified_user = {'local': req.user.local};
+    chain.local.user_array.push(modified_user);
     chain.save(function(err, chain) {
       User.findOne({'_id': req.user._id}, function(err, user) {
             console.log("Updating user's chain");
             user.local.chain = chain.local.color,
             user.local.invites = [];
+            user.local.points += 50;
             user.save(function(err) {
               if(err) throw err;
               else res.redirect('/gameplay');
@@ -98,46 +116,154 @@ router.post('/join_chain', function(req, res, next) {
 
 router.get('/gameplay', isLoggedIn, function(req, res, next) {
   // console.log(req.user);
-  User.find({}, 'local.lat local.lng local.username local.invites local.chain local.loggedIn local.inviteSent')
+  User.find({}, 'local.lat local.lng local.username local.invites local.chain local.loggedIn local.inviteSent local.points')
   .exec(function(err, list_users) {
     // console.log("KYA AAP CHUTIYE HAIN");
     var new_list_users = [];
     list_users.forEach(function(user, index) {
       var dist = geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng], {format: false, unit: 'km'});
-      if(!user.local.chain && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn) {
+      if(!user.local.chain && dist <= 10 && !user._id.equals(req.user._id) && user.local.loggedIn) {
         new_list_users.push(user.local);
       }
     });
-    Chain.find({}, 'local.color local.coord_array')
+    // var coord_array = [];
+    Chain.find({}, 'local.color local.user_array')
     .exec(function(err, list_chains) {
       // console.log(list_chains);
       list_chains.forEach(function(chain, index) {
+        console.log(list_chains[index]);
+        list_chains[index].local.user_array = list_chains[index].local.user_array.map(function(user) {
+          return user.local;
+        });
         list_chains[index] = list_chains[index].local;
+        console.log(list_chains[index]);
       }); 
-      // console.log(list_chains);
+      // console.log(coord_array);
+      console.log(list_chains);
       // console.log(new_list_users);
       res.render('gameplay', {me: req.user.local, chains_list: list_chains, nearby_users: new_list_users});
     });
   });
+
 });
+
 
 router.post('/get_coord', isLoggedIn, function(req, res, next) {
 
     User.findOne({ 'local.username' :  req.user.local.username }, function(err, user) {
 
-            user.local.lat = req.body.lat;
-            user.local.lng = req.body.lng;
+            //user.local.lat = req.body.lat;
+            //user.local.lng = req.body.lng;
             user.save((err, user) => {
-                if(err) 
-                  throw err;
-                else
+                if(err) throw err;
+                if(req.user.local.chain === null || req.user.local.chain == "deleted") {
+                  console.log(req.user);
                   res.end();
-                //   // console.log("i am here");
-                //   //next();
+                  return;
+                }
+                Chain.findOne({'local.color' : req.user.local.chain}, function(err, chain) {
+                  var user_array = chain.local.user_array;
+                  user_array.forEach(function(user_in_chain, index) {
+                    if(user_in_chain.local.username == req.user.local.username) {
+                      //user_array[index].local.lat = req.body.lat;
+                      //user_array[index].local.lng = req.body.lng;
+                      //break;
+                    }
+                  });
+                  chain.local.user_array = user_array;
+                  chain.save(function(err, chain) {
+                    
+                    //Check if chain is valid and self intersection and other intersections
+                    console.log("Chain co-ordinates updated");
+                    var user_array2 = chain.local.user_array;
+                    var edge = [];
+                    for(var i = 0; i < user_array2.length - 1; i++) {
+                      edge.push({'f' : user_array2[i], 's' : user_array2[i + 1]});
+                      //var dist = geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng], {format: false, unit: 'km'});
+                    }
+                    console.log("Edge: " + JSON.stringify(edge));
+                    var ok = 1, M = 100000;
+                    for(var i = 0; i < edge.length; i++) {
+                      var dist = geodist([edge[i].f.local.lat, edge[i].f.local.lng], [edge[i].s.local.lat, edge[i].s.local.lng], {format: false, unit: 'km'});
+                      if(dist > 10) ok = 0;
+                      for(var j = i + 2; j < edge.length; j++) {
+                        p1 = [edge[i].f.local.lat * M, edge[i].f.local.lng * M];
+                        p2 = [edge[i].s.local.lat * M, edge[i].s.local.lng * M];
+                        p3 = [edge[j].f.local.lat * M, edge[j].f.local.lng * M];
+                        p4 = [edge[j].s.local.lat * M, edge[j].s.local.lng * M];
+                        if(intersects([p1, p2], [p3, p4])) {
+                          ok = 0;
+                        }
+                      }
+                    }
+                    console.log("OK: " + ok);
+                    if(ok === 0) {
+                      Chain.findOneAndRemove({'local.color' : chain.local.color}, function(err, chain2) {
+                        console.log(chain2);
+                        User.find({'local.chain' : chain2.local.color}, 'local.chain local.inviteSent local.invites')
+                        .exec(function(err, list_users) {
+                          if(err) throw err;
+                          list_users.forEach(function(user, index) {
+                            list_users[index].local.chain = "deleted";
+                            list_users[index].local.inviteSent = false;
+                            list_users[index].local.invites = [];
+                            list_users[index].save(function(err, user) {
+                              if(err) throw err;
+                              else console.log(user.local.chain + "means deleted");
+                            });
+                          });
+                        });
+                      });
+                    } else {
+                      //Checking for other intersections
+                      Chain.find({}, 'local.color local.user_array')
+                      .exec(function(err, list_chains) {
+
+                        for(var i = 0; i < list_chains.length; i++) {
+                          if(list_chains[i].local.color === chain.local.color)  continue;
+                          var user_array3 = list_chains[i].local.user_array;
+                          console.log("User array of other chain:" + JSON.stringify(user_array3));
+                          for(var j = 0; j < user_array3.length - 1; j++) {
+                            p1 = [user_array3[j].local.lat, user_array3[j].local.lng]; //User array 3 first co-ordinate
+                            p2 = [user_array3[j + 1].local.lat, user_array3[j + 1].local.lng]; // User array 3 second co-ordinate
+                            console.log("My chain user array: " + JSON.stringify(user_array2));
+                            for(var k = 0; k < user_array2.length - 1; k++) {
+                              p3 = [user_array2[k].local.lat, user_array2[k].local.lng]; //User array 2 first co-ordinate
+                              p4 = [user_array2[k + 1].local.lat, user_array2[k + 1].local.lng]; //User array 2 second co-ordinate
+                              console.log(p1 + "   " + p2 + " " + p3 + "  " + p4);
+                              if(intersects([p1, p2], [p3, p4])) {
+                                console.log("Intersected");
+                                Chain.findOneAndRemove({'local.color' : list_chains[i].local.color}, function(err, chain2) {
+                                  console.log("Deleting opponent's chain" + chain2);
+                                  User.find({'local.chain' : chain2.local.color}, 'local.chain local.inviteSent local.invites')
+                                    .exec(function(err, list_users) {
+                                      if(err) throw err;
+                                      list_users.forEach(function(user, index) {
+                                        list_users[index].local.chain = "deleted";
+                                        list_users[index].local.inviteSent = false;
+                                        list_users[index].local.invites = [];
+                                        list_users[index].save(function(err, user) {
+                                          if(err) throw err;
+                                          console.log(user.local.chain + "means deleted");
+                                          res.end();
+                                          return;
+                                        });
+                                      });
+                                    });
+                                });
+                              }
+                            }
+                          }
+                        }
+                      });
+                    }
+                    res.end();
+                    return;
+                  });
+                });
             });
-        });
-    
-});
+    }); //User.findOne
+}); //router.post
 
 router.get('/profile', isLoggedIn, function(req, res) {
         res.render('profile', {title: "Your co-ordinates"})

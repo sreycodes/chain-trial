@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <meta http-equiv="refresh" content="60">
+        <meta charset="utf-8">
+        <title>Simple Polylines</title>
+        <style>
+            /* Always set the map height explicitly to define the size of the div
+* element that contains the map. */
+            #map {
+                height: 70%;
+                width: 70%;
+            }
+
+            /* Optional: Makes the sample page fill the window. */
+            html, body {
+                height: 100%;
+                margin: 10px;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Current scenario</h1>
+        <div id="map"></div>
+        <script>
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position)=>{
+                    console.log('Ajax request started');
+                    var ajaxRequest = $.ajax({
+                        type: "POST",
+                        url: "/get_coord",
+                        dataType: "json",
+                        data: {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        }
+                    });
+                    $(document).ajaxComplete(function(event, request, settings) {
+                        console.log("Ajax request Sent");
+                    });
+                }
+                );
+            } else {
+                console.log('Your browser is out of fashion, there\'s no geolocation!');
+            }
+        </script>
+        <script>
+            var yo = [{
+                coord_array: [{
+                    lng: 20,
+                    lat: 5
+                }, {
+                    lng: 4,
+                    lat: -30
+                }, {
+                    lng: 8,
+                    lat: 7
+                }],
+                color: 'red'
+            }, {
+                coord_array: [{
+                    lng: -20,
+                    lat: 72
+                }, {
+                    lng: -57,
+                    lat: 12
+                }, {
+                    lng: -87,
+                    lat: 18
+                }],
+                color: 'blue'
+            }, {
+                coord_array: [{
+                    lng: 103.7804817,
+                    lat: 1.2905444
+                }, {
+                    lat: 1.2904373,
+                    lng: 103.78048799999999
+                }, {
+                    lat: 1.2904195,
+                    lng: 103.78053109999999
+                }, {
+                    lat: 1.2904195,
+                    lng: 103.78053109999999
+                }, {
+                    lat: 1.2905206999999999,
+                    lng: 103.7804932
+                }, {
+                    lat: 1.2906644051045926,
+                    lng: 103.78032159101606
+                }, {
+                    lat: 1.2905802,
+                    lng: 103.78027259999999
+                }, {
+                    lat: 1.2916887730701718,
+                    lng: 103.78040771182278
+                }],
+                color: 'green'
+            }, {
+                coord_array: [{
+                    lng: 103.77338449763948,
+                    lat: 1.3063093508756531
+                }],
+                color: 'white'
+            }, {
+                coord_array: [{
+                    lng: 103.77338449763948,
+                    lat: 1.3063093508756531
+                }, {
+                    lat: 1.3063382000000001,
+                    lng: 103.77336439999999
+                }],
+                color: 'black'
+            }, {
+                coord_array: [{
+                    lng: 103.86774439999999,
+                    lat: 1.3553794
+                }],
+                color: 'black'
+            }, {
+                coord_array: [{
+                    lng: 103.7733822,
+                    lat: 1.3063833999999999
+                }],
+                color: 'black'
+            }]
+            // console.log(yo);
+            var wow = [{
+                invites: ['black'],
+                username: 'three',
+                loggedIn: true,
+                chain: null,
+                lat: 1.3063684,
+                lng: 103.7733542,
+                inviteSent: false
+            }]
+            // console.log(wow);
+            // This example creates a 2-pixel-wide red polyline showing the path of
+            // the first trans-Pacific flight between Oakland, CA, and Brisbane,
+            // Australia which was made by Charles Kingsford Smith.
+            function initMap() {
+                var map = new google.maps.Map(document.getElementById('map'),{
+                    zoom: 7,
+                    center: {
+                        lat: 1.3063726,
+                        lng: 103.7733616
+                    },
+                    mapTypeId: 'terrain',
+                    styles: [{
+                        elementType: 'geometry',
+                        stylers: [{
+                            color: '#242f3e'
+                        }]
+                    }, {
+                        elementType: 'labels.text.stroke',
+                        stylers: [{
+                            color: '#242f3e'
+                        }]
+                    }, {
+                        elementType: 'labels.text.fill',
+                        stylers: [{
+                            color: '#ffffff'
+                        }]
+                    }, //'#746855'}]},
+                    {
+                        featureType: 'administrative.locality',
+                        elementType: 'labels.text.fill',
+                        stylers: [{
+                            color: '#d59563'
+                        }]
+                    }, {
+                        featureType: 'poi',
+                        elementType: 'labels.text.fill',
+                        stylers: [{
+                            color: '#d59563'
+                        }]
+                    }, {
+                        featureType: 'poi.park',
+                        elementType: 'geometry',
+                        stylers: [{
+                            color: '#263c3f'
+                        }]
+                    }, {
+                        featureType: 'poi.park',
+                        elementType: 'labels.text.fill',
+                        stylers: [{
+                            color: '#6b9a76'
+                        }]
+                    }, {
+                        featureType: 'road',
+                        elementType: 'geometry',
+                        stylers: [{
+                            color: '#38414e'
+                        }]
+                    }, {
+                        featureType: 'road',
+                        elementType: 'geometry.stroke',
+                        stylers: [{
+                            color: '#212a37'
+                        }]
+                    }, {
+                        featureType: 'road',
+                        elementType: 'labels.text.fill',
+                        stylers: [{
+                            color: '#9ca5b3'
+                        }]
+                    }, {
+                        featureType: 'road.highway',
+                        elementType: 'geometry',
+                        stylers: [{
+                            color: '#746855'
+                        }]
+                    }, {
+                        featureType: 'road.highway',
+                        elementType: 'geometry.stroke',
+                        stylers: [{
+                            color: '#1f2835'
+                        }]
+                    }, {
+                        featureType: 'road.highway',
+                        elementType: 'labels.text.fill',
+                        stylers: [{
+                            color: '#f3d19c'
+                        }]
+                    }, {
+                        featureType: 'transit',
+                        elementType: 'geometry',
+                        stylers: [{
+                            color: '#2f3948'
+                        }]
+                    }, {
+                        featureType: 'transit.station',
+                        elementType: 'labels.text.fill',
+                        stylers: [{
+                            color: '#d59563'
+                        }]
+                    }, {
+                        featureType: 'water',
+                        elementType: 'geometry',
+                        stylers: [{
+                            color: '#17263c'
+                        }]
+                    }, {
+                        featureType: 'water',
+                        elementType: 'labels.text.fill',
+                        stylers: [{
+                            color: '#515c6d'
+                        }]
+                    }, {
+                        featureType: 'water',
+                        elementType: 'labels.text.stroke',
+                        stylers: [{
+                            color: '#17263c'
+                        }]
+                    }]
+                });
+
+                yo.forEach(function(this_chain) {
+                    var chain1_list = this_chain.coord_array;
+                    console.log(chain1_list);
+                    var chain1 = new google.maps.Polyline({
+                        path: chain1_list,
+                        geodesic: true,
+                        strokeColor: this_chain.color,
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2
+                    });
+                    chain1.setMap(map);
+                });
+
+                wow.forEach(function(this_user) {
+                    // console.log(this_user);
+                    var marker = new google.maps.Marker({
+                        position: {
+                            lat: this_user.lat,
+                            lng: this_user.lng
+                        },
+                        map: map,
+                        title: this_user.username
+                    });
+                });
+
+                var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+                var meMarker = new google.maps.Marker({
+                    position: {
+                        lat: 1.3063726,
+                        lng: 103.7733616
+                    },
+                    map: map,
+                    icon: image
+                });
+
+            }
+        </script>
+        <script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5YKqBNhQ2DSXJYlVhj3Fr6b39X-NlWmA&amp;callback=initMap"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io();
+            function sendRefreshEvent() {
+                console.log("Sent client event");
+                socket.emit('mapChanged', 'Sent an event from the client!');
+            }
+            socket.on('refreshAll', function(data) {
+                window.location.reload();
+                console.log(data);
+            });
+        </script>
+        <h2>
+            Invitations<ol></ol>
+        </h2>
+    </body>
+</html>

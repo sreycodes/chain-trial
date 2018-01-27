@@ -14,7 +14,8 @@ var userSchema = mongoose.Schema({
         lng          : Number,
         chain : String,
         invites : Array,
-        inviteSent : Boolean
+        inviteSent : Boolean,
+        points : Number
     }
 
 });

@@ -3,6 +3,7 @@ html
   head
     meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
     meta(charset='utf-8')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
     title Simple Polylines
     style.
       /* Always set the map height explicitly to define the size of the div
@@ -20,7 +21,6 @@ html
   body
     h1= 'Current scenario'
     #map
-
     script.
       var yo = [#{chains_list}]
       // console.log(yo);
@@ -117,7 +117,9 @@ html
       });
 
       yo.forEach(function(this_chain) {
-        var chain1_list = this_chain.coord_array;
+        var chain1_list = this_chain.user_array.map(function(user) {
+          return {'lat': user.lat, 'lng': user.lng };
+        });
         console.log(chain1_list);
         var chain1 = new google.maps.Polyline({
         path: chain1_list,
@@ -173,15 +175,15 @@ html
                 input(type='hidden', name='username', value=user.username)
                 input(type='submit', value='Extend', onclick="sendRefreshEvent()")
     if !me.chain && !me.inviteSent
-    h2= 'Invitations'
-      ol
-        if me.invites
-          each invite in me.invites
-            li 
-              if invite
-              | #{invite} 
-              form(action='/join_chain', method='POST')
-                input(type='hidden', name='chain_color', value=invite)
-                input(type='submit', value='Join', onclick="sendRefreshEvent()")
+      h2= 'Invitations'
+        ol
+          if me.invites
+            each invite in me.invites
+              li 
+                if invite
+                | #{invite} 
+                form(action='/join_chain', method='POST')
+                  input(type='hidden', name='chain_color', value=invite)
+                  input(type='submit', value='Join', onclick="sendRefreshEvent()")
   
           

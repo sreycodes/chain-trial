@@ -6,8 +6,7 @@ var chainSchema = mongoose.Schema({
 
     local            : {
         color        : String,
-        coord_array  : Array,
-        //isCut        : Boolean
+        user_array  : Array
     }
 
 });

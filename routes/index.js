@@ -30,34 +30,44 @@ router.get('/signup', isNotLoggedIn, function(req, res, next) {
 // });
 
 router.post('/create_chain', function(req, res, next) {
-  chain = new Chain();
-  chain.local.color = color_array.pop();
-  chain.local.coord_array = [];
+  if(!req.user.local.color) {
+    chain = new Chain();
+    chain.local.color = color_array.pop();
+    color_array.shift();
+    chain.local.coord_array = [];
+  } else {
+    
+  }
   chain.local.coord_array.push({lat: req.user.local.lat,lng: req.user.local.lng});
   chain.save(function(err, chain) {
     if(err) throw(err);
     console.log("Chain created");
     // console.log(chain);
-    User.update({'local.username' : req.user.local.username},{'local.chain' : req.body.chainID},
-                function(err, user) {
-                  if(err) throw err;
+    User.findOne({'local.username' : req.user.local.username}, function(err, user) {
                   console.log("User updated");
-                  User.findOne({'local.username' : req.body.username},
-                                function(err, user) {
-                                  if(err) throw err;
-                                  if(user.local.invites) {
-                                    user.local.invites.push(chain.local.color); //Assuming different colors for all chains
-                                  } else {
-                                    user.local.invites = [chain.local.color];
-                                  }
-                                  console.log("Invite sent")
-                                  user.save(function(err) {
-                                              if(err) throw err;
-                                              else res.redirect('/gameplay');
-                                            });
-                              });
+                  user.local.chain = chain.local.color;
+                  user.local.inviteSent = true;
+                  user.save(function(err) {
+                    if(err) throw err;
+                    else {
+                      User.findOne({'local.username' : req.body.username},
+                                  function(err, user) {
+                                    if(err) throw err;
+                                    if(user.local.invites) {
+                                      user.local.invites.push(chain.local.color); //Assuming different colors for all chains
+                                    } else {
+                                      user.local.invites = [chain.local.color];
+                                    }
+                                    console.log("Invite sent")
+                                    user.save(function(err) {
+                                                if(err) throw err;
+                                                else res.redirect('/gameplay');
+                                              });
+                                });
+                            }
+                      });
                 });
-  });
+        });
 });
 
 router.post('/join_chain', function(req, res, next) {
@@ -66,7 +76,7 @@ router.post('/join_chain', function(req, res, next) {
     chain.save(function(err, chain) {
       User.findOne({'_id': req.user._id}, function(err, user) {
             console.log("Updating user's chain");
-            user.local.chain = chain._id,
+            user.local.chain = chain.local.color,
             user.local.invites = [];
             user.save(function(err) {
               if(err) throw err;
@@ -93,13 +103,13 @@ router.post('/join_chain', function(req, res, next) {
 
 router.get('/gameplay', isLoggedIn, function(req, res, next) {
   // console.log(req.user);
-  User.find({}, 'local.lat local.lng local.username local.invites local.chain local.loggedIn')
+  User.find({}, 'local.lat local.lng local.username local.invites local.chain local.loggedIn local.inviteSent')
   .exec(function(err, list_users) {
     // console.log("KYA AAP CHUTIYE HAIN");
     var new_list_users = [];
     list_users.forEach(function(user, index) {
       var dist = geodist([user.local.lat, user.local.lng], [req.user.local.lat, req.user.local.lng], {format: false, unit: 'km'});
-      if(!user.local.chain && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn) {
+      if(!user.local.chain && dist <= 10000 && !user._id.equals(req.user._id) && user.local.loggedIn && !req.user.local.inviteSent) {
         new_list_users.push(user.local);
       }
     });

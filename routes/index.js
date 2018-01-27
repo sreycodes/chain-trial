@@ -354,9 +354,11 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
 }); //router.post
 
 router.get('/profile', isLoggedIn, function(req, res) {
-        User.find({}, 'local')
+        User.find({}, 'local.points local.username')
         .exec(function(err, list_users) {
+          list_users = list_users.map((user) => user.local);
           list_users.sort(function(user1, user2) {
+            console.log(user1);
             if(user1.points > user2.points) {
               return -1;
             } else if(user1.points < user2.points) {
@@ -365,7 +367,12 @@ router.get('/profile', isLoggedIn, function(req, res) {
               return 0;
             }
           });
-          res.render('profile', {rankedUsers: list_users, me: req.user.local});
+          var me_index = -100;
+          for(var i = 0; i < list_users.length; i++) {
+            if(list_users[i].username == req.user.local.username) me_index = i + 1;
+          }
+          console.log(list_users);
+          res.render('profile', {rankedUsers: list_users, me_index: me_index, me: req.user.local});
         });
     });
 

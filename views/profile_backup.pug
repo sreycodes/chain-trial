@@ -1,0 +1,32 @@
+extends layout
+
+block content
+  h1= title
+  br
+  script.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => { 
+                                                  console.log('Ajax request started');
+                                                  var ajaxRequest = 
+                                                      $.ajax({
+                                                        type: "POST",
+                                                        url: "/get_coord",
+                                                        dataType: "json",
+                                                        data: {
+                                                            lat: position.coords.latitude,
+                                                            lng: position.coords.longitude
+                                                        }
+                                                      });
+                                                  $(document).ajaxComplete(function(event, request, settings) {
+                                                    console.log("Ajax request Sent");
+                                                    link = document.getElementById("hidden_gameplay");
+                                                    link.hidden = false;
+                                                  });
+                                                });
+    } else {
+        console.log('Your browser is out of fashion, there\'s no geolocation!');
+    }
+  br
+  a(id='hidden_gameplay' href='/gameplay' hidden) Gameplay
+  br
+  a(href='/logout') Logout

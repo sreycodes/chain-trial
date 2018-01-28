@@ -206,7 +206,7 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
             }
             for(var i = 0; i < user.local.invites.length; i++) {
               if(user.local.invites[i] == "deleted") {
-                for(int j = i; j < user.local.invites.length - 1; j++) {
+                for(var j = i; j < user.local.invites.length - 1; j++) {
                   user.local.invites[j] = user.local.invites[j + 1];
                 }
                 user.local.invites.pop();

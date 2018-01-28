@@ -200,6 +200,19 @@ router.post('/get_coord', isLoggedIn, function(req, res, next) {
 
             user.local.lat = req.body.lat;
             user.local.lng = req.body.lng;
+            //Change
+            if(user.local.chain == null || user.local.chain == "deleted") {
+              user.local.inviteSent = false;
+            }
+            for(var i = 0; i < user.local.invites.length; i++) {
+              if(user.local.invites[i] == "deleted") {
+                for(int j = i; j < user.local.invites.length - 1; j++) {
+                  user.local.invites[j] = user.local.invites[j + 1];
+                }
+                user.local.invites.pop();
+                break;
+              }
+            } 
             console.log(req.user);
             console.log("MEIN YAHA HUN");
             user.save((err, user) => {

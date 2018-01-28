@@ -11,12 +11,12 @@ html
       * element that contains the map. */
       #map {
       height: 70%;
-      width: 70%;
+      width: 100%;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
       height: 100%;
-      margin: 10px;
+      margin: 0px;
       padding: 0;
       }
   script.
@@ -41,7 +41,6 @@ html
         console.log('Your browser is out of fashion, there\'s no geolocation!');
     }
   body
-    h1= 'Current scenario'
     #map
     script.
       var yo = [#{chains_list}]
@@ -54,7 +53,7 @@ html
       // Australia which was made by Charles Kingsford Smith.
       function initMap() {
       var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 15,
+      zoom: 17,
       center: {lat: #{me.lat}, lng: #{me.lng}},
       mapTypeId: 'terrain',
       styles: [
@@ -159,9 +158,11 @@ html
             console.log("WOW");
           }
           else {
+            var image_red = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
             var marker = new google.maps.Marker({
               position: {'lat': parseFloat(coord.lat), 'lng': parseFloat(coord.lng)},
-              map: map
+              map: map,
+              icon: image_red
             });
           }
         });

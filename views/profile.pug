@@ -36,6 +36,16 @@ html(lang='en')
     .my_points
       p Point: #{me.points}
       p Rank: #{me_index}
+    .my_instruct
+      p Instructions
+    .my_instruct2
+      p 1. The aim of the game is to join an existing chain (or create a new one ;-)) 
+      br
+      p 2. You can extend only to players who are within a 10 km radius of your current location.
+      br
+      p 3. Chains can be destroyed when the head  of the chain cuts another chain but this is subject to the condition that you have at least twice the number of players on your chain when compared to the chain being attacked.
+      br
+      p 4. The user gets points on extending the chain. The whole chain gets points when it successfully destroys other chains where the head of the chain responsible for cutting chains is rewarded with the most points.
     .leaderboard
       h1
         svg.ico-cup

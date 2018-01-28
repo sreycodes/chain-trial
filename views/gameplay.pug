@@ -7,6 +7,25 @@ html
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
     title Simple Polylines
     style.
+      .c-error {
+        color: #c51244 !important;
+        border-radius: 0 !important;
+        position: relative; 
+        display: inline-block !important;
+      }
+      .c-button {
+        position: relative; 
+        padding:5px 15px; 
+        background:#ffa500; 
+        cursor:pointer;
+        -webkit-border-radius: 5px;
+        width: 100%;
+        height: 35px;
+        font-size: 18px;
+        border: #000000;
+        border-style: solid;
+        border-width: 2px;
+      }
       /* Always set the map height explicitly to define the size of the div
       * element that contains the map. */
       #map {
@@ -40,7 +59,7 @@ html
     } else {
         console.log('Your browser is out of fashion, there\'s no geolocation!');
     }
-  body
+  body(style="background-color:#242f3e")
     #map
     script.
       var yo = [#{chains_list}]
@@ -141,7 +160,7 @@ html
       yo.forEach(function(this_chain) {
         console.log(this_chain.color);
         var chain1_list = this_chain.user_array.map(function(user) {
-          return {'lat': parseFloat(user.lat), 'lng': parseFloat(user.lng) };
+          return {'lat': parseFloat(user.lat), 'lng': parseFloat(user.lng), 'username' : user.username};
         });
         console.log(chain1_list);
         console.log("^Logged chain1_list");
@@ -162,7 +181,8 @@ html
             var marker = new google.maps.Marker({
               position: {'lat': parseFloat(coord.lat), 'lng': parseFloat(coord.lng)},
               map: map,
-              icon: image_red
+              icon: image_red,
+              title: coord.username
             });
           }
         });
@@ -201,31 +221,26 @@ html
           console.log(data);
         });
     if me.chain == "deleted"
-      h2= 'Your chain got deleted. Sorry :( Better luck next time.'
+      h2(class="c-error")= 'Your chain got deleted. Sorry :( Better luck next time.'
+    br
     if (!me.chain || me.chain == "deleted") && !me.inviteSent 
-      h2= 'Create chain'
-        form(action='/create_chain', method='POST')
-          input(type='submit', value='Create chain', onclick="sendRefreshEvent()")
+      form(action='/create_chain', method='POST')
+        input(class="c-button" type='submit', value='Create chain', onclick="sendRefreshEvent()")
+    br
     if me.chain && me.chain != "deleted" && !me.inviteSent
-      h2= 'Extend to'
-        ol
-          each user in nearby_users
-            if user
-              li 
-              | #{user.username} 
-              form(action='/extend_chain', method='POST')
-                input(type='hidden', name='username', value=user.username)
-                input(type='submit', value='Extend', onclick="sendRefreshEvent()")
+      each user in nearby_users
+        if user 
+          form(action='/extend_chain', method='POST')
+            input(type='hidden', name='username', value=user.username)
+            input(class="c-button" type='submit', value='Extend to ' + user.username, onclick="sendRefreshEvent()")
+        br
     if (!me.chain || me.chain == "deleted") && !me.inviteSent
-      h2= 'Invitations'
-        ol
-          if me.invites
-            each invite in me.invites
-              li 
-                if invite
-                | #{invite} 
-                form(action='/join_chain', method='POST')
-                  input(type='hidden', name='chain_color', value=invite)
-                  input(type='submit', value='Join', onclick="sendRefreshEvent()")
+        if me.invites
+          each invite in me.invites
+            if invite
+            form(action='/join_chain', method='POST')
+              input(type='hidden', name='chain_color', value=invite)
+              input(class='c-button' type='submit', value='Join the ' + invite + ' chain' , onclick="sendRefreshEvent()")
+          br
   
           

@@ -5,7 +5,7 @@ var User = require('../config/mongoose_setup');
 var Chain = require('../config/mongoose_setup2');
 var geodist = require('geodist');
 var intersects = require('line-segments-intersect');
-var color_array = ['blue', 'green', 'red', 'yellow', 'white', 'black'] //Have to put in database
+var color_array = ['blue', 'green', 'red', 'yellow', 'white', 'orange', 'purple', 'pink', 'cyan', 'brown'] //Have to put in database
 
 /* GET home page. */
 router.get('/', isNotLoggedIn, function(req, res, next) {
@@ -36,6 +36,7 @@ router.post('/create_chain', function(req, res, next) {
   User.findOne({'local.username' : 'admin'}, function(err, user) {
     index = user.local.points;
     user.local.points++;
+    user.local.points %= 10;
     user.save(function(err) {
       if(err) throw err;
       chain.local.color = color_array[index];
